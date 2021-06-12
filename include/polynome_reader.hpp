@@ -48,7 +48,8 @@ public:
     
     void Read(int lexemesNum, char **lexemes, OnPolynomeReadCallback callback) const {
         int currentLexemeId = 0;
-        std::vector<ValueType> currentCoeffs;
+        int currentDegree = kPolynomeDegree - 1;
+        std::vector<ValueType> currentCoeffs = std::vector<ValueType>(kPolynomeDegree, ValueType(0));
         
         while (currentLexemeId < lexemesNum) {
             if (!isInteger(lexemes[currentLexemeId])) {
@@ -56,26 +57,22 @@ public:
                 continue;
             }
             
-            ValueType coeff = readInteger<ValueType>(lexemes[currentLexemeId]);
+            currentCoeffs[currentDegree--] = readInteger<ValueType>(lexemes[currentLexemeId]);
             
-            currentCoeffs.push_back(coeff);
-            
-            if (currentCoeffs.size() == kPolynomeDegree) {
-                //todo reverse coeffs order
+            if (currentDegree < 0) {
                 //todo move coeffs optimal
                 callback(std::move(Polynome(currentCoeffs)));
-                currentCoeffs.clear();
+                currentCoeffs = std::vector<ValueType>(Degree, ValueType(0));
+                currentDegree = kPolynomeDegree - 1;
             }
             
             currentLexemeId++;
         }
         
-        if (!currentCoeffs.empty()) {
-            while (currentCoeffs.size() < kPolynomeDegree) {
-                currentCoeffs.push_back(ValueType(0));
-            }
+        if (currentDegree < kPolynomeDegree - 1) {
             callback(std::move(Polynome(currentCoeffs)));
-            currentCoeffs.clear();
+            currentCoeffs = std::vector<ValueType>(Degree, ValueType(0));
+            currentDegree = kPolynomeDegree - 1;
         }
     }
     

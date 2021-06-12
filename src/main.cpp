@@ -5,7 +5,7 @@
 
 
 void OnPolynomeRead(Polynome<double> poly) {
-    std::cout << poly << std::endl;
+    //std::cout << poly << std::endl;
     
 }
 
@@ -13,8 +13,10 @@ int main(int argc, char **argv) {
     
     clock_t requestStartTime = clock();
     
-    PolynomeReader<double, 3> reader;
-    reader.Read(--argc, ++argv, OnPolynomeRead);
+    for (int i = 0; i < 100; i++) {
+        PolynomeReader<double, 3> reader;
+        reader.Read(--argc, ++argv, OnPolynomeRead);
+    }
     
     clock_t requestEndTime = clock();
     //todo get rid of this in the final version

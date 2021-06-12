@@ -8,6 +8,21 @@
 #include <polynome.hpp>
 
 
+inline bool isInteger(const char *str) {
+    const char *ptr = str;
+    while (*ptr != '\0') {
+        if (std::isdigit(*ptr) ||
+            (ptr == str && *ptr == '-')) 
+        {
+            ptr++;
+            continue;
+        }
+        return false;
+    }
+    return true;
+}
+
+
 template<typename ValueType, unsigned int Degree>
 class PolynomeReader
 {
@@ -22,9 +37,13 @@ public:
         std::vector<ValueType> currentCoeffs;
         
         while (currentLexemeId < lexemesNum) {
+            if (!isInteger(lexemes[currentLexemeId])) {
+                currentLexemeId++;
+                continue;
+            }
+            
             ValueType coeff;
             //todo read without stringstream
-            //todo get rid of garbage
             std::stringstream str(lexemes[currentLexemeId]);
             str >> coeff;
             

@@ -1,11 +1,15 @@
 #include <iostream>
 
 #include <polynome.hpp>
+#include <solver.hpp>
 #include <polynome_reader.hpp>
 
 
 void OnPolynomeRead(Polynome<double> poly) {
-    //std::cout << poly << std::endl;
+    EquationSolver<double> solver;
+    auto res = solver.solve(poly);
+    
+    std::cout << poly << " => " << res << std::endl;
     
 }
 

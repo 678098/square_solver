@@ -24,6 +24,7 @@ inline bool isInteger(const char *str) {
 
 template<typename ValueType>
 ValueType readInteger(const char *str) {
+    //todo for integer arithmetic types make conversion without float values
     if (std::is_arithmetic<ValueType>()) {
         return std::stod(str);
     } else {

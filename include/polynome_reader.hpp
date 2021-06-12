@@ -22,6 +22,19 @@ inline bool isInteger(const char *str) {
     return true;
 }
 
+template<typename ValueType>
+ValueType readInteger(const char *str) {
+    if (std::is_arithmetic<ValueType>()) {
+        return std::stod(str);
+    } else {
+        ValueType coeff;
+        //todo read complex types without stringstream
+        std::stringstream stream(str);
+        stream >> coeff;        
+        return coeff;
+    }
+}
+
 
 template<typename ValueType, unsigned int Degree>
 class PolynomeReader
@@ -42,10 +55,7 @@ public:
                 continue;
             }
             
-            ValueType coeff;
-            //todo read without stringstream
-            std::stringstream str(lexemes[currentLexemeId]);
-            str >> coeff;
+            ValueType coeff = readInteger<ValueType>(lexemes[currentLexemeId]);
             
             currentCoeffs.push_back(coeff);
             

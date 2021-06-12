@@ -1,12 +1,18 @@
 #include <iostream>
 
+#include <polynome.hpp>
+#include <polynome_reader.hpp>
+
+
+void OnPolynomeRead(Polynome<double> poly) {
+    std::cout << poly << std::endl;
+    
+}
 
 int main(int argc, char **argv) {
-
-    int value;
-    while (std::cin >> value) {
-        std::cout << value << std::endl;
-    }
+    
+    PolynomeReader<double, 3> reader;
+    reader.Read(--argc, ++argv, OnPolynomeRead);
     
     return 0;
 }

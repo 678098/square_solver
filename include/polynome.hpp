@@ -4,7 +4,7 @@
 #include <cassert>
 
 template<typename ValueType>
-bool isAlmostZero(const ValueType &value) {
+bool IsAlmostZero(const ValueType &value) {
     constexpr double kEPS = 1e-6;
     return -kEPS < value && value < kEPS;
 }
@@ -16,24 +16,24 @@ class Polynome
 public:
     Polynome(const std::vector<ValueType> &coeffs):
         kCoeffs(coeffs),
-        kDegree(findDegree(coeffs))
+        kDegree(FindDegree(coeffs))
     {
     }
     virtual ~Polynome() = default;
     
-    int degree() const {
+    int Degree() const {
         return kDegree;
     }
     
-    const std::vector<ValueType> &coeffs() const {
+    const std::vector<ValueType> &Coeffs() const {
         return kCoeffs;
     }
     
-    size_t size() const {
+    size_t Size() const {
         return kCoeffs.size();
     }
     
-    bool empty() const {
+    bool Empty() const {
         return kCoeffs.empty();
     }
     
@@ -42,17 +42,17 @@ public:
         return kCoeffs[index];
     }
     
-    const ValueType &a() const {
+    const ValueType &A() const {
         assert(kCoeffs.size() >= 3);
         return kCoeffs[2];
     }
     
-    const ValueType &b() const {
+    const ValueType &B() const {
         assert(kCoeffs.size() >= 2);
         return kCoeffs[1];
     }
     
-    const ValueType &c() const {
+    const ValueType &C() const {
         assert(kCoeffs.size() >= 1);
         return kCoeffs[0];
     }
@@ -62,9 +62,9 @@ private:
     const std::vector<ValueType> kCoeffs;
     const int kDegree;
     
-    static int findDegree(const std::vector<ValueType> &coeffs) {
+    static int FindDegree(const std::vector<ValueType> &coeffs) {
         for (size_t i = 0; i < coeffs.size(); i++) {
-            if (!isAlmostZero(coeffs[i])) {
+            if (!IsAlmostZero(coeffs[i])) {
                 return coeffs.size() - i - 1;
             }
         }
@@ -76,10 +76,10 @@ private:
 template<typename ValueType>
 std::ostream &operator<<(std::ostream &out, const Polynome<ValueType> &poly) {
     out << "(";
-    for (int i = int(poly.size()) - 1; i >= 1; i--) {
+    for (int i = int(poly.Size()) - 1; i >= 1; i--) {
         out << poly[i] << " ";
     }
-    if (!poly.empty()) {
+    if (!poly.Empty()) {
         out << poly[0];
     }
     out << ")";

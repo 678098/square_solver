@@ -13,12 +13,12 @@ class EquationSolver
 public:
     virtual ~EquationSolver() = default;
     
-    EquationSolution<ValueType> solve(const Polynome<ValueType> &polynome) const {
-        if (canSolve(polynome)) {
-            return solveImpl(polynome);
+    EquationSolution<ValueType> Solve(const Polynome<ValueType> &polynome) const {
+        if (CanSolve(polynome)) {
+            return SolveImpl(polynome);
         }
         if (nextSolver) {
-            return nextSolver->solve(polynome);
+            return nextSolver->Solve(polynome);
         } else {
             //todo consider throwing an exception here instead of can't solve solution
             return SpecificSolution::kCannotSolve;
@@ -26,9 +26,9 @@ public:
     }
     
     template<template <typename NextSolverValueType> typename NextSolverType>
-    EquationSolver *chain() {
+    EquationSolver *Chain() {
         if (nextSolver) {
-            nextSolver->template chain<NextSolverType>();
+            nextSolver->template Chain<NextSolverType>();
         } else {
             nextSolver = std::make_unique<NextSolverType<ValueType> >();
         }
@@ -36,8 +36,8 @@ public:
     }
     
 protected:
-    virtual bool canSolve(const Polynome<ValueType> &polynome) const = 0;
-    virtual EquationSolution<ValueType> solveImpl(const Polynome<ValueType> &polynome) const = 0;
+    virtual bool CanSolve(const Polynome<ValueType> &polynome) const = 0;
+    virtual EquationSolution<ValueType> SolveImpl(const Polynome<ValueType> &polynome) const = 0;
     
     std::unique_ptr<EquationSolver<ValueType> > nextSolver;
 };
@@ -47,14 +47,14 @@ template<typename ValueType>
 class QuadraticSolver: public EquationSolver<ValueType>
 {
 protected:
-    bool canSolve(const Polynome<ValueType> &polynome) const override {
-        return polynome.degree() == 2;
+    bool CanSolve(const Polynome<ValueType> &polynome) const override {
+        return polynome.Degree() == 2;
     }
     
-    EquationSolution<ValueType> solveImpl(const Polynome<ValueType> &polynome) const override {
-        const ValueType &a = polynome.a();
-        const ValueType &b = polynome.b();
-        const ValueType &c = polynome.c();
+    EquationSolution<ValueType> SolveImpl(const Polynome<ValueType> &polynome) const override {
+        const ValueType &a = polynome.A();
+        const ValueType &b = polynome.B();
+        const ValueType &c = polynome.C();
         
         ValueType d = b * b - 4 * a * c;
         if (d < 0) {
@@ -76,13 +76,13 @@ template<typename ValueType>
 class LinearSolver: public EquationSolver<ValueType>
 {
 protected:
-    bool canSolve(const Polynome<ValueType> &polynome) const override {
-        return polynome.degree() == 1;
+    bool CanSolve(const Polynome<ValueType> &polynome) const override {
+        return polynome.Degree() == 1;
     }
     
-    EquationSolution<ValueType> solveImpl(const Polynome<ValueType> &polynome) const override {
-        const ValueType &b = polynome.b();
-        const ValueType &c = polynome.c();
+    EquationSolution<ValueType> SolveImpl(const Polynome<ValueType> &polynome) const override {
+        const ValueType &b = polynome.B();
+        const ValueType &c = polynome.C();
         
         ValueType x = -c / b;
         
@@ -95,21 +95,21 @@ template<typename ValueType>
 class ConstantSolver: public EquationSolver<ValueType>
 {
 protected:
-    bool canSolve(const Polynome<ValueType> &polynome) const override {
-        return polynome.degree() == 0;
+    bool CanSolve(const Polynome<ValueType> &polynome) const override {
+        return polynome.Degree() == 0;
     }
     
-    EquationSolution<ValueType> solveImpl(const Polynome<ValueType> &polynome) const override {
-        const ValueType &c = polynome.c();
+    EquationSolution<ValueType> SolveImpl(const Polynome<ValueType> &polynome) const override {
+        const ValueType &c = polynome.C();
         
-        return isAlmostZero(c) ? SpecificSolution::kAnyNumberIsRoot : SpecificSolution::kNoRoots;
+        return IsAlmostZero(c) ? SpecificSolution::kAnyNumberIsRoot : SpecificSolution::kNoRoots;
     }
 };
 
 
 template<typename ValueType>
-std::unique_ptr<EquationSolver<ValueType> > buildSolver() {
+std::unique_ptr<EquationSolver<ValueType> > BuildSolver() {
     std::unique_ptr<EquationSolver<ValueType> > res = std::make_unique<QuadraticSolver<ValueType> >();
-    res->template chain<LinearSolver>()->template chain<ConstantSolver>();
+    res->template Chain<LinearSolver>()->template Chain<ConstantSolver>();
     return res;
 }

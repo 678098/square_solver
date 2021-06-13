@@ -4,10 +4,10 @@
 #include <solver.hpp>
 #include <polynome_reader.hpp>
 
-std::unique_ptr<EquationSolver<double> > solver = buildSolver<double>();
+std::unique_ptr<EquationSolver<double> > solver = BuildSolver<double>();
 
 void OnPolynomeRead(Polynome<double> poly) {
-    auto res = solver->solve(poly);
+    auto res = solver->Solve(poly);
     
     std::cout << poly << " => " << res << std::endl;    
 }

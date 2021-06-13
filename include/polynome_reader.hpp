@@ -6,7 +6,7 @@
 #include <polynome.hpp>
 
 
-inline bool isInteger(const char *str) {
+inline bool IsInteger(const char *str) {
     const char *ptr = str;
     while (*ptr != '\0') {
         if (std::isdigit(*ptr) ||
@@ -21,7 +21,7 @@ inline bool isInteger(const char *str) {
 }
 
 template<typename ValueType>
-ValueType readInteger(const char *str) {
+ValueType ReadInteger(const char *str) {
     //todo for integer arithmetic types make conversion without float values
     if (std::is_arithmetic<ValueType>()) {
         return std::stod(str);
@@ -50,12 +50,12 @@ public:
         std::vector<ValueType> currentCoeffs = std::vector<ValueType>(kPolynomeDegree, ValueType(0));
         
         while (currentLexemeId < lexemesNum) {
-            if (!isInteger(lexemes[currentLexemeId])) {
+            if (!IsInteger(lexemes[currentLexemeId])) {
                 currentLexemeId++;
                 continue;
             }
             
-            currentCoeffs[currentDegree--] = readInteger<ValueType>(lexemes[currentLexemeId]);
+            currentCoeffs[currentDegree--] = ReadInteger<ValueType>(lexemes[currentLexemeId]);
             
             if (currentDegree < 0) {
                 //todo move coeffs optimal

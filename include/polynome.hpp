@@ -27,6 +27,10 @@ public:
         return kCoeffs.size();
     }
     
+    bool empty() const {
+        return kCoeffs.empty();
+    }
+    
     const ValueType &operator[] (size_t index) const {
         assert(index < kCoeffs.size());
         return kCoeffs[index];
@@ -49,8 +53,8 @@ public:
     
 private:
 
-    const int kDegree;
     const std::vector<ValueType> kCoeffs;
+    const int kDegree;
     
     static bool isAlmostZero(const ValueType &value) {
         constexpr double kEPS = 1e-6;
@@ -74,7 +78,7 @@ std::ostream &operator<<(std::ostream &out, const Polynome<ValueType> &poly) {
     for (int i = int(poly.size()) - 1; i >= 1; i--) {
         out << poly[i] << " ";
     }
-    if (!poly.coeffs.empty()) {
+    if (!poly.empty()) {
         out << poly[0];
     }
     out << ")";

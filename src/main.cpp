@@ -8,12 +8,16 @@
 #include <polynome.hpp>
 #include <solver.hpp>
 #include <polynome_reader.hpp>
+#include <args_parser.hpp>
 
 
 class SquareSolverService
 {
 public:
-    SquareSolverService(): solver(BuildSolver<double>()) {
+    SquareSolverService(bool silent = false):
+        solver(BuildSolver<double>()),
+        kSilent(silent)
+    {
     }
     virtual ~SquareSolverService() = default;
     
@@ -34,6 +38,7 @@ private:
     std::vector<Polynome<double> > preparedBatch;
     
     const int kBatchSize = 32;
+    const bool kSilent = false;
     
     
     void OnPolynomeRead(const Polynome<double> &poly) {
@@ -95,22 +100,28 @@ private:
             
             for (const Polynome<double> &poly: dt) {
                 auto res = solver->Solve(poly);
-                std::cout << poly << " => " << res << std::endl;
+                if (!kSilent) {
+                    std::cout << poly << " => " << res << std::endl;
+                }
             }
         }
     }
 };
 
 int main(int argc, char **argv) {
+    int argc_offset;
+    const Configuration config = ParseCmdArgs(argc, argv, argc_offset);
     
     clock_t requestStartTime = clock();
     
-    SquareSolverService service;
-    service.Run(argc - 1, argv + 1);
+    SquareSolverService service(config.silent);
+    service.Run(argc - argc_offset, argv + argc_offset);
     
     clock_t requestEndTime = clock();
-    //todo get rid of this in the final version
-    std::cout << "Request processing time: " << (requestEndTime - requestStartTime) / double(CLOCKS_PER_SEC) << std::endl;
+
+    if (config.measurePerformance) {
+        std::cout << "request processing time: " << (requestEndTime - requestStartTime) / double(CLOCKS_PER_SEC) << std::endl;
+    }
         
     return 0;
 }

@@ -10,6 +10,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
 endif()
 
 set(SOURCES
+    "src/args_parser.cpp"
 	"src/main.cpp"
 )
 

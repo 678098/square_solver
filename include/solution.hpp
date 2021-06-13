@@ -38,7 +38,7 @@ std::ostream &operator<<(std::ostream &out, const EquationSolution<ValueType> &s
         const std::vector<ValueType> &vals = std::get<std::vector<ValueType> >(solution);
         out << "(";
         for (int i = int(vals.size()) - 1; i > 0; i--) {
-            out << vals[i] << " ";
+            out << vals[i] << ", ";
         }
         if (!vals.empty()) {
             out << vals[0];

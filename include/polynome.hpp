@@ -72,9 +72,9 @@ private:
     int degree;
     
     static int FindDegree(const std::vector<ValueType> &coeffs) {
-        for (size_t i = 0; i < coeffs.size(); i++) {
+        for (int i = static_cast<int>(coeffs.size()) - 1; i >= 0; i--) {
             if (!IsAlmostZero(coeffs[i])) {
-                return coeffs.size() - i - 1;
+                return i;
             }
         }
         return 0;

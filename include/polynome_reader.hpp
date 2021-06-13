@@ -39,7 +39,7 @@ template<typename ValueType, unsigned int Degree>
 class PolynomeReader
 {
 public:
-    typedef std::function<void(Polynome<ValueType>)> OnPolynomeReadCallback;
+    using OnPolynomeReadCallback = std::function<void(Polynome<ValueType>)>;
     
     PolynomeReader() = default;
     virtual ~PolynomeReader() = default;

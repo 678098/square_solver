@@ -1,3 +1,4 @@
+from typing import List
 import random
 
 
@@ -26,19 +27,48 @@ def write_with_garbage(file, coeff: int) -> None:
 		file.write(generate_garbage() + ' ')
 
 
+def generate_quadratic(gen) -> List[int]:
+	x1 = gen()
+	x2 = gen()
+
+	a = gen()
+	while a == 0:
+		a = gen()
+
+	b = - a * (x1 + x2)
+	c = a * x1 * x2
+	return [a, b, c]
+
+
+def generate_linear(gen) -> List[int]:
+	x = gen()
+	a = 0
+	b = gen()
+	while b == 0:
+		b = gen()
+	c = - x * b
+	return [a, b, c]
+
+
+def generate_constant(gen) -> List[int]:
+	a = 0
+	b = 0
+	c = random.choice([gen(), 0])
+	return [a, b, c]
+
+
+def generate_equation(gen) -> List[int]:
+	f = random.choice([generate_quadratic, generate_linear, generate_constant])
+	return f(gen)
+
+
 def generate_tasks(num: int = 10000, with_garbage: bool = True, with_big_values: bool = True) -> None:
 	gen = generate_value_big if with_big_values else generate_value
 	wr = write_with_garbage if with_garbage else write
 
 	coeffs = []
 	for i in range(num):
-		x1 = gen()
-		x2 = gen()
-		a = gen()
-		b = - a * (x1 + x2)
-		c = a * x1 * x2
-
-		coeffs += [a, b, c]
+		coeffs += generate_equation(gen)
 
 	with open('task.txt', 'w') as f:
 		for coeff in coeffs:

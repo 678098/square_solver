@@ -9,13 +9,6 @@
 #include <solver.hpp>
 #include <polynome_reader.hpp>
 
-std::unique_ptr<EquationSolver<double> > solver = BuildSolver<double>();
-
-void OnPolynomeRead(Polynome<double> poly) {
-    auto res = solver->Solve(poly);
-    
-    //std::cout << poly << " => " << res << std::endl;    
-}
 
 class SquareSolverService
 {
@@ -102,7 +95,7 @@ private:
             
             for (const Polynome<double> &poly: dt) {
                 auto res = solver->Solve(poly);
-                //std::cout << poly << " => " << res << std::endl;
+                std::cout << poly << " => " << res << std::endl;
             }
         }
     }

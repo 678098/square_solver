@@ -20,4 +20,4 @@ target_include_directories(square_solver
 		"include/"
 )
 
-target_link_libraries(square_solver)
+target_link_libraries(square_solver pthread)

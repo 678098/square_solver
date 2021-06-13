@@ -15,52 +15,61 @@ class Polynome
 {
 public:
     Polynome(const std::vector<ValueType> &coeffs):
-        kCoeffs(coeffs),
-        kDegree(FindDegree(coeffs))
+        coeffs(coeffs),
+        degree(FindDegree(coeffs))
+    {
+    }
+    Polynome():
+        degree(0)
+    {
+    }
+    Polynome(const Polynome &other):
+        coeffs(other.coeffs),
+        degree(other.degree)
     {
     }
     virtual ~Polynome() = default;
     
     int Degree() const {
-        return kDegree;
+        return degree;
     }
     
     const std::vector<ValueType> &Coeffs() const {
-        return kCoeffs;
+        return coeffs;
     }
     
     size_t Size() const {
-        return kCoeffs.size();
+        return coeffs.size();
     }
     
     bool Empty() const {
-        return kCoeffs.empty();
+        return coeffs.empty();
     }
     
     const ValueType &operator[] (size_t index) const {
-        assert(index < kCoeffs.size());
-        return kCoeffs[index];
+        assert(index < coeffs.size());
+        return coeffs[index];
     }
     
     const ValueType &A() const {
-        assert(kCoeffs.size() >= 3);
-        return kCoeffs[2];
+        assert(coeffs.size() >= 3);
+        return coeffs[2];
     }
     
     const ValueType &B() const {
-        assert(kCoeffs.size() >= 2);
-        return kCoeffs[1];
+        assert(coeffs.size() >= 2);
+        return coeffs[1];
     }
     
     const ValueType &C() const {
-        assert(kCoeffs.size() >= 1);
-        return kCoeffs[0];
+        assert(coeffs.size() >= 1);
+        return coeffs[0];
     }
     
 private:
 
-    const std::vector<ValueType> kCoeffs;
-    const int kDegree;
+    std::vector<ValueType> coeffs;
+    int degree;
     
     static int FindDegree(const std::vector<ValueType> &coeffs) {
         for (size_t i = 0; i < coeffs.size(); i++) {

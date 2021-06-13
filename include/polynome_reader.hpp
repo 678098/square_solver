@@ -2,8 +2,6 @@
 
 #include <functional>
 #include <sstream>
-//todo remove iostream
-#include <iostream>
 
 #include <polynome.hpp>
 

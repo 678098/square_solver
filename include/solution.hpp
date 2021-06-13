@@ -1,7 +1,6 @@
 #pragma once
 
 #include <variant>
-#include <ostream>
 
 
 enum class SpecificSolution {

@@ -102,11 +102,7 @@ protected:
     EquationSolution<ValueType> solveImpl(const Polynome<ValueType> &polynome) const override {
         const ValueType &c = polynome.c();
         
-        if (isAlmostZero(c)) {
-            return SpecificSolution::kAnyNumberIsRoot;
-        } else {
-            return SpecificSolution::kNoRoots;
-        }
+        return isAlmostZero(c) ? SpecificSolution::kAnyNumberIsRoot : SpecificSolution::kNoRoots;
     }
 };
 
@@ -117,4 +113,3 @@ std::unique_ptr<EquationSolver<ValueType> > buildSolver() {
     res->template chain<LinearSolver>()->template chain<ConstantSolver>();
     return res;
 }
-

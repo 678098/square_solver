@@ -25,7 +25,7 @@ public:
     void Run(int argc, char **argv) {
         std::thread consumer([&](){ this->ConsumerThread(); });
         ProducerThread(argc, argv);
-        Finalize();
+        StopConsumer();
         consumer.join();
     }
 
@@ -39,15 +39,6 @@ private:
     
     const int kBatchSize = 32;
     const bool kSilent = false;
-    
-    
-    void OnPolynomeRead(const Polynome<double> &poly) {
-        formingBatch.emplace_back(std::move(poly));
-
-        if (formingBatch.size() > kBatchSize) {
-            ProcessBatch();
-        }
-    }
     
     void ProcessBatch() {
         std::unique_lock<std::mutex> ul(mtx);
@@ -63,11 +54,7 @@ private:
         cvar.wait(ul, [&]() { return this->batchReady.load() == false; });
     }
     
-    void Finalize() {
-        if (!formingBatch.empty()) {
-            ProcessBatch();
-        }
-        
+    void StopConsumer() {
         std::unique_lock<std::mutex> ul(mtx);
                         
         batchReady = true;
@@ -76,13 +63,21 @@ private:
     }
     
     void ProducerThread(int argc, char **argv) {
-        PolynomeReader<double, 3> reader;
         for (int i = 0; i < 100; i++) {
-            reader.Read(argc, argv, [&](Polynome<double> poly) {
-                this->OnPolynomeRead(poly);
-            });
+            PolynomeReader<double, 3> reader(argc, argv);
+            Polynome<double> poly;
+            while (reader >> poly) {
+                formingBatch.emplace_back(std::move(poly));
+
+                if (formingBatch.size() > kBatchSize) {
+                    ProcessBatch();
+                }
+            }
         }
-        Finalize();
+        
+        if (!formingBatch.empty()) {
+            ProcessBatch();
+        }
     }
     
     void ConsumerThread() {

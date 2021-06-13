@@ -1,80 +1,50 @@
 #pragma once
 
-#include <functional>
-#include <sstream>
-
 #include <polynome.hpp>
-
-
-inline bool IsInteger(const char *str) {
-    const char *ptr = str;
-    while (*ptr != '\0') {
-        if (std::isdigit(*ptr) ||
-            (ptr == str && *ptr == '-')) 
-        {
-            ptr++;
-            continue;
-        }
-        return false;
-    }
-    return true;
-}
-
-template<typename ValueType>
-ValueType ReadInteger(const char *str) {
-    //todo for integer arithmetic types make conversion without float values
-    if (std::is_arithmetic<ValueType>()) {
-        return std::stod(str);
-    } else {
-        ValueType coeff;
-        //todo read complex types without stringstream
-        std::stringstream stream(str);
-        stream >> coeff;        
-        return coeff;
-    }
-}
+#include <value_reader.hpp>
 
 
 template<typename ValueType, unsigned int Degree>
 class PolynomeReader
 {
 public:
-    using OnPolynomeReadCallback = std::function<void(Polynome<ValueType>)>;
-    
-    PolynomeReader() = default;
+    PolynomeReader(int argc, char **argv) :
+        reader(std::make_unique<CmdValueReader<ValueType> >(argc, argv))
+    {
+    }
     virtual ~PolynomeReader() = default;
     
-    void Read(int lexemesNum, char **lexemes, OnPolynomeReadCallback callback) const {
-        int currentLexemeId = 0;
-        int currentDegree = kPolynomeDegree - 1;
-        std::vector<ValueType> currentCoeffs = std::vector<ValueType>(kPolynomeDegree, ValueType(0));
+    operator bool() const {
+        return !finished;
+    }
+    
+    PolynomeReader &operator>>(Polynome<ValueType> &val) {
+        int degree = kPolynomeDegree - 1;
         
-        while (currentLexemeId < lexemesNum) {
-            if (!IsInteger(lexemes[currentLexemeId])) {
-                currentLexemeId++;
-                continue;
-            }
-            
-            currentCoeffs[currentDegree--] = ReadInteger<ValueType>(lexemes[currentLexemeId]);
-            
-            if (currentDegree < 0) {
+        std::vector<ValueType> coeffs(kPolynomeDegree, ValueType(0));
+        while ((*reader) >> coeffs[degree]) {
+            if (--degree < 0) {
                 //todo move coeffs optimal
-                callback(std::move(Polynome(currentCoeffs)));
-                currentCoeffs = std::vector<ValueType>(Degree, ValueType(0));
-                currentDegree = kPolynomeDegree - 1;
+                val = Polynome<ValueType>(coeffs);
+                return *this;
             }
-            
-            currentLexemeId++;
         }
         
-        if (currentDegree < kPolynomeDegree - 1) {
-            callback(std::move(Polynome(currentCoeffs)));
-            currentCoeffs = std::vector<ValueType>(Degree, ValueType(0));
-            currentDegree = kPolynomeDegree - 1;
+        if (degree < kPolynomeDegree - 1) {
+            //todo move coeffs optimal
+            val = Polynome<ValueType>(coeffs);
+            return *this;
         }
+        
+        this->finished = true;
+        return *this;
     }
     
 private:
     const unsigned int kPolynomeDegree = Degree;
+    
+    bool finished = false;
+    
+    std::unique_ptr<BasicValueReader<ValueType> > reader;
     
 };

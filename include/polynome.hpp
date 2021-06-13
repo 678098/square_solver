@@ -3,6 +3,12 @@
 #include <vector>
 #include <cassert>
 
+template<typename ValueType>
+bool isAlmostZero(const ValueType &value) {
+    constexpr double kEPS = 1e-6;
+    return -kEPS < value && value < kEPS;
+}
+
 
 template<typename ValueType>
 class Polynome
@@ -56,15 +62,10 @@ private:
     const std::vector<ValueType> kCoeffs;
     const int kDegree;
     
-    static bool isAlmostZero(const ValueType &value) {
-        constexpr double kEPS = 1e-6;
-        return -kEPS < value && value < kEPS;
-    }
-    
     static int findDegree(const std::vector<ValueType> &coeffs) {
         for (size_t i = 0; i < coeffs.size(); i++) {
             if (!isAlmostZero(coeffs[i])) {
-                return coeffs.size() - i;
+                return coeffs.size() - i - 1;
             }
         }
         return 0;

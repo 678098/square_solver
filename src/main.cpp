@@ -10,13 +10,14 @@
 #include <polynome_reader.hpp>
 #include <args_parser.hpp>
 
+using FloatType = double;
 
 class SquareSolverService
 {
 public:
-    SquareSolverService(PolynomeReader<double, 3> &reader, bool silent = false, int batchSize = 32):
+    SquareSolverService(PolynomeReader<FloatType, 3> &reader, bool silent = false, int batchSize = 32):
         reader(reader),
-        solver(BuildSolver<double>()),
+        solver(BuildSolver<FloatType>()),
         kSilent(silent),
         kBatchSize(batchSize)
     {
@@ -31,13 +32,13 @@ public:
     }
 
 private:
-    PolynomeReader<double, 3> &reader;
-    const std::unique_ptr<EquationSolver<double> > solver;
+    PolynomeReader<FloatType, 3> &reader;
+    const std::unique_ptr<EquationSolver<FloatType> > solver;
     std::atomic<bool> batchReady = false;
     std::mutex mtx;
     std::condition_variable cvar;
-    std::vector<Polynome<double> > formingBatch;
-    std::vector<Polynome<double> > preparedBatch;
+    std::vector<Polynome<FloatType> > formingBatch;
+    std::vector<Polynome<FloatType> > preparedBatch;
     
     const int kBatchSize = 32;
     const bool kSilent = false;
@@ -65,7 +66,7 @@ private:
     }
     
     void ProducerThread() {
-        Polynome<double> poly;
+        Polynome<FloatType> poly;
         while (reader >> poly) {
             formingBatch.emplace_back(std::move(poly));
 
@@ -84,7 +85,7 @@ private:
             std::unique_lock<std::mutex> ul(mtx);
             cvar.wait(ul, [&]() { return this->batchReady.load(); });
             
-            std::vector<Polynome<double> > dt = std::move(preparedBatch);
+            std::vector<Polynome<FloatType> > dt = std::move(preparedBatch);
             batchReady = false;
             
             ul.unlock();
@@ -92,7 +93,7 @@ private:
             
             if (dt.empty()) break;
             
-            for (const Polynome<double> &poly: dt) {
+            for (const Polynome<FloatType> &poly: dt) {
                 auto res = solver->Solve(poly);
                 if (!kSilent) {
                     std::cout << poly << " => " << res << std::endl;
@@ -108,7 +109,7 @@ int main(int argc, char **argv) {
     
     clock_t requestStartTime = clock();
     
-    PolynomeReader<double, 3> reader = config.interactive ? PolynomeReader<double, 3>(std::cin) : PolynomeReader<double, 3>(argc - argc_offset, argv + argc_offset);
+    PolynomeReader<FloatType, 3> reader = config.interactive ? PolynomeReader<FloatType, 3>(std::cin) : PolynomeReader<FloatType, 3>(argc - argc_offset, argv + argc_offset);
     SquareSolverService service(reader, config.silent, config.interactive ? 1 : 32);
     service.Run();
     

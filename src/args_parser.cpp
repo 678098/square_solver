@@ -12,7 +12,7 @@ void PrintUsage() {
     std::cout << "\t-h, --help        print usage" << std::endl;
     std::cout << "\t-s, --silent      don't print found solutions" << std::endl;
     std::cout << "\t-p, --perf        measure request processing time" << std::endl;
-    std::cout << "\t-i, --stdin       interactive mode: get coefficients from standard input" << std::endl;
+    std::cout << "\t-i, --stdin       interactive mode: get coefficients from stdin" << std::endl;
     std::cout << std::endl;
     std::cout << "Examples:" << std::endl;
     std::cout << "\t./square_solver 3 4 5 0 4 -4 11 22 123 45 42 42 67 1001" << std::endl;
@@ -57,7 +57,6 @@ Configuration ParseCmdArgs(int argc, char **argv, int &argc_flags_offset_out) {
     if (argc == offset && !config.interactive) {
         config.printUsage = true;
     }
-    
     if (config.printUsage) PrintUsage();
     
     argc_flags_offset_out = offset;

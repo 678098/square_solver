@@ -19,7 +19,10 @@ class EquationSolver
 public:
     virtual ~EquationSolver() = default;
     
+    //EquationSolver is a base class for concrete equation solvers
+    //they are placed in a chain (chain-of-responsibility pattern)
     EquationSolution<ValueType> Solve(const Polynome<ValueType> &polynome) const {
+        //each solver can either solve the equation or give it to the next solver in a chain
         if (CanSolve(polynome)) {
             return SolveImpl(polynome);
         }
@@ -31,6 +34,7 @@ public:
         }
     }
     
+    //used for chain building of solvers
     template<template <typename NextSolverValueType> typename NextSolverType>
     EquationSolver *Chain() {
         if (nextSolver) {

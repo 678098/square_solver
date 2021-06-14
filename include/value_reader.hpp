@@ -3,6 +3,7 @@
 #include <sstream>
 
 
+//garbage in input data should be filtered out with IsInteger checks
 inline bool IsInteger(const char *str) {
     const char *ptr = str;
     while (*ptr != '\0') {
@@ -17,6 +18,7 @@ inline bool IsInteger(const char *str) {
     return true;
 }
 
+//some complex types can need a special conversion function
 template<typename ValueType>
 ValueType ReadInteger(const char *str) {
     //todo for integer arithmetic types make conversion without float values
@@ -32,6 +34,7 @@ ValueType ReadInteger(const char *str) {
 }
 
 
+//value readers provide stream-like interfaces for reading coefficients
 template<typename ValueType>
 class BasicValueReader
 {

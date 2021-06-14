@@ -40,6 +40,7 @@ std::ostream &operator<<(std::ostream &out, const EquationSolution<ValueType> &s
         for (int i = int(vals.size()) - 1; i > 0; i--) {
             out << vals[i] << ", ";
         }
+        //make sure that we don't have an extra ',' at the end
         if (!vals.empty()) {
             out << vals[0];
         }

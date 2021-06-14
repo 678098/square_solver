@@ -54,6 +54,7 @@ Configuration ParseCmdArgs(int argc, char **argv, int &argc_flags_offset_out) {
         }
         break;
     }
+    //usage should be printed when we don't know what to process
     if (argc == offset && !config.interactive) {
         config.printUsage = true;
     }

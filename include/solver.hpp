@@ -8,6 +8,12 @@
 
 
 template<typename ValueType>
+inline ValueType &SqrtImpl(const ValueType &value) {
+    return std::sqrt(value);
+}
+
+
+template<typename ValueType>
 class EquationSolver
 {
 public:
@@ -61,7 +67,8 @@ protected:
             return SpecificSolution::kNoRoots;
         }
         
-        ValueType sqrt_d = std::sqrt(static_cast<double>(d));
+        //ValueType sqrt_d = std::sqrt(static_cast<double>(d));
+        ValueType sqrt_d = SqrtImpl(d);
         //todo optimize
         ValueType a2 = 2 * a;
         ValueType x1 = (-b + sqrt_d) / a2;

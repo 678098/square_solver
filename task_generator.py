@@ -76,4 +76,4 @@ def generate_tasks(num: int = 10000, with_garbage: bool = True, with_big_values:
 
 
 if __name__ == "__main__":
-	generate_tasks(num=10000, with_garbage=True, with_big_values=False)
+	generate_tasks(num=10000, with_garbage=True, with_big_values=True)

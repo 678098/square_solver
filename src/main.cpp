@@ -7,6 +7,11 @@
 #ifdef WITH_BOOST_MULTIPRECISION
 #include <boost/multiprecision/cpp_dec_float.hpp>
 using FloatType = boost::multiprecision::cpp_dec_float_100;
+
+boost::multiprecision::cpp_dec_float_100 SqrtImpl(const boost::multiprecision::cpp_dec_float_100 &value) {
+    return boost::multiprecision::sqrt(value);
+}
+
 #else
 using FloatType = double;
 #endif

@@ -33,15 +33,20 @@ public:
 
 private:
     PolynomeReader<FloatType, 3> &reader;
-    const std::unique_ptr<EquationSolver<FloatType> > solver;
-    std::atomic<bool> batchReady = false;
-    std::mutex mtx;
-    std::condition_variable cvar;
-    std::vector<Polynome<FloatType> > formingBatch;
-    std::vector<Polynome<FloatType> > preparedBatch;
     
+    const std::unique_ptr<EquationSolver<FloatType> > solver;
     const int kBatchSize = 32;
     const bool kSilent = false;
+    
+    std::mutex mtx;
+    std::condition_variable cvar;
+    
+    using BatchType = std::vector<Polynome<FloatType> >;
+    using BatchPtrType = std::unique_ptr<BatchType>;
+    
+    std::atomic<bool> batchReady = false;
+    BatchPtrType preparedBatch;
+    BatchPtrType formingBatch;
     
     void ProcessBatch() {
         std::unique_lock<std::mutex> ul(mtx);
@@ -50,8 +55,8 @@ private:
         ul.unlock();
         cvar.notify_one();
         
-        formingBatch.clear();
-        formingBatch.reserve(kBatchSize);
+        formingBatch = std::make_unique<BatchType>();
+        formingBatch->reserve(kBatchSize);
         
         ul.lock();
         cvar.wait(ul, [&]() { return this->batchReady.load() == false; });
@@ -66,16 +71,19 @@ private:
     }
     
     void ProducerThread() {
+        formingBatch = std::make_unique<BatchType>();
+        formingBatch->reserve(kBatchSize);
+        
         Polynome<FloatType> poly;
         while (reader >> poly) {
-            formingBatch.emplace_back(std::move(poly));
+            formingBatch->emplace_back(std::move(poly));
 
-            if (formingBatch.size() >= kBatchSize) {
+            if (formingBatch->size() >= kBatchSize) {
                 ProcessBatch();
             }
         }
         
-        if (!formingBatch.empty()) {
+        if (!formingBatch->empty()) {
             ProcessBatch();
         }
     }
@@ -85,15 +93,15 @@ private:
             std::unique_lock<std::mutex> ul(mtx);
             cvar.wait(ul, [&]() { return this->batchReady.load(); });
             
-            std::vector<Polynome<FloatType> > dt = std::move(preparedBatch);
+            BatchPtrType batch = std::move(preparedBatch);
             batchReady = false;
             
             ul.unlock();
             cvar.notify_one();
             
-            if (dt.empty()) break;
+            if (!batch) break;
             
-            for (const Polynome<FloatType> &poly: dt) {
+            for (const Polynome<FloatType> &poly: (*batch)) {
                 auto res = solver->Solve(poly);
                 if (!kSilent) {
                     std::cout << poly << " => " << res << std::endl;

@@ -12,6 +12,10 @@ public:
         reader(std::make_unique<CmdValueReader<ValueType> >(argc, argv))
     {
     }
+    PolynomeReader(std::istream &inp) :
+        reader(std::make_unique<StreamReader<ValueType> >(inp))
+    {
+    }
     virtual ~PolynomeReader() = default;
     
     operator bool() const {

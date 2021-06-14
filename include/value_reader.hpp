@@ -80,3 +80,29 @@ protected:
     char **argv;
 };
 
+
+template<typename ValueType>
+class StreamReader: public BasicValueReader<ValueType>
+{
+public:
+    StreamReader(std::istream &inp):
+        inp(inp)
+    {
+    }
+    
+    StreamReader &operator>>(ValueType &val) override {
+        std::string lexeme;
+        while (inp >> lexeme) {
+            if (!IsInteger(lexeme.c_str())) {
+                continue;
+            }
+            val = ReadInteger<ValueType>(lexeme.c_str());
+            return *this;
+        }
+        this->finished = true;
+        return *this;
+    }
+    
+protected:
+    std::istream &inp;
+};

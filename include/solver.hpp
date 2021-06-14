@@ -8,7 +8,7 @@
 
 
 template<typename ValueType>
-inline ValueType &SqrtImpl(const ValueType &value) {
+inline ValueType SqrtImpl(const ValueType &value) {
     return std::sqrt(value);
 }
 

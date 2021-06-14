@@ -23,7 +23,11 @@ ValueType ReadInteger(const char *str) {
     if (std::is_arithmetic<ValueType>()) {
         return std::stod(str);
     } else {
-        return ValueType(str);
+        ValueType coeff;
+        //todo read complex types without stringstream
+        std::stringstream stream(str);
+        stream >> coeff;        
+        return coeff;
     }
 }
 

@@ -4,21 +4,26 @@
 #include <condition_variable>
 #include <atomic>
 
+#include <solver.hpp>
+#include <polynome_reader.hpp>
+#include <args_parser.hpp>
+
 #ifdef WITH_BOOST_MULTIPRECISION
 #include <boost/multiprecision/cpp_dec_float.hpp>
 using FloatType = boost::multiprecision::cpp_dec_float_100;
 
+template<>
 boost::multiprecision::cpp_dec_float_100 SqrtImpl(const boost::multiprecision::cpp_dec_float_100 &value) {
     return boost::multiprecision::sqrt(value);
 }
 
+template<>
+boost::multiprecision::cpp_dec_float_100 ReadInteger(const char *str) {
+    return boost::multiprecision::cpp_dec_float_100(str);
+}
 #else
 using FloatType = double;
 #endif
-
-#include <solver.hpp>
-#include <polynome_reader.hpp>
-#include <args_parser.hpp>
 
 
 class SquareSolverService

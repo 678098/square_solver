@@ -9,6 +9,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
 	set(CMAKE_BUILD_TYPE Release)
 endif()
 
+option(WITH_BOOST_MULTIPRECISION "Allow boost multiprecision support for storing large float values" ON)
+
+if(WITH_BOOST_MULTIPRECISION)
+	add_definitions(-DWITH_BOOST_MULTIPRECISION)
+endif()
+
 set(SOURCES
     "src/args_parser.cpp"
 	"src/main.cpp"

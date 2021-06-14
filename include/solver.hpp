@@ -61,7 +61,7 @@ protected:
             return SpecificSolution::kNoRoots;
         }
         
-        ValueType sqrt_d = std::sqrt(d);
+        ValueType sqrt_d = std::sqrt(static_cast<double>(d));
         //todo optimize
         ValueType a2 = 2 * a;
         ValueType x1 = (-b + sqrt_d) / a2;

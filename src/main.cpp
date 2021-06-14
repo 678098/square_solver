@@ -2,15 +2,19 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include <queue>
 #include <atomic>
 
-#include <polynome.hpp>
+#ifdef WITH_BOOST_MULTIPRECISION
+#include <boost/multiprecision/cpp_dec_float.hpp>
+using FloatType = boost::multiprecision::cpp_dec_float_100;
+#else
+using FloatType = double;
+#endif
+
 #include <solver.hpp>
 #include <polynome_reader.hpp>
 #include <args_parser.hpp>
 
-using FloatType = double;
 
 class SquareSolverService
 {
@@ -48,7 +52,7 @@ private:
     BatchPtrType preparedBatch;
     BatchPtrType formingBatch;
     
-    void ProcessBatch() {
+    void SendBatch() {
         std::unique_lock<std::mutex> ul(mtx);
         preparedBatch = std::move(formingBatch);
         batchReady = true;
@@ -79,12 +83,12 @@ private:
             formingBatch->emplace_back(std::move(poly));
 
             if (formingBatch->size() >= kBatchSize) {
-                ProcessBatch();
+                SendBatch();
             }
         }
         
         if (!formingBatch->empty()) {
-            ProcessBatch();
+            SendBatch();
         }
     }
     
@@ -111,7 +115,10 @@ private:
     }
 };
 
+
 int main(int argc, char **argv) {
+    std::cout.precision(std::numeric_limits<FloatType>::digits10);
+    
     int argc_offset;
     const Configuration config = ParseCmdArgs(argc, argv, argc_offset);
     
@@ -124,6 +131,7 @@ int main(int argc, char **argv) {
     clock_t requestEndTime = clock();
 
     if (config.measurePerformance) {
+        std::cout.precision(6);
         std::cout << "request processing time: " << (requestEndTime - requestStartTime) / double(CLOCKS_PER_SEC) << std::endl;
     }
         
